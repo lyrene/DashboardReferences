@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Scientific Library</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                </svg>
+                <span>Scientific Library</span>
+            </div>
+            <div class="nav-links">
+                <a href="dashboard.html" class="active">Dashboard</a>
+                <a href="articles.html">Artigos</a>
+                <a href="network.html">Rede</a>
+                <a href="timeline.html">Timeline</a>
+                <button class="btn-reset" id="resetBtn">Novo CSV</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <h1>Dashboard Geral</h1>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalArticles">-</div>
+                <div class="stat-label">Artigos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalAuthors">-</div>
+                <div class="stat-label">Autores</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="yearRange">-</div>
+                <div class="stat-label">Período</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="topKeyword">-</div>
+                <div class="stat-label">Palavra-chave Principal</div>
+            </div>
+        </div>
+
+        <div class="charts-grid">
+            <div class="card">
+                <h2>Publicações por Ano</h2>
+                <canvas id="yearChart"></canvas>
+            </div>
+            <div class="card">
+                <h2>Top 10 Palavras-chave</h2>
+                <canvas id="keywordChart"></canvas>
+            </div>
+            <div class="card">
+                <h2>Top 10 Autores Mais Produtivos</h2>
+                <canvas id="authorChart"></canvas>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

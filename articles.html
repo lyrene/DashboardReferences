@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artigos - Scientific Library</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                </svg>
+                <span>Scientific Library</span>
+            </div>
+            <div class="nav-links">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="articles.html" class="active">Artigos</a>
+                <a href="network.html">Rede</a>
+                <a href="timeline.html">Timeline</a>
+                <button class="btn-reset" id="resetBtn">Novo CSV</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <h1>Tabela de Artigos</h1>
+        
+        <div class="card">
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Buscar em todos os campos...">
+            </div>
+            
+            <div class="table-container">
+                <table id="articlesTable">
+                    <thead>
+                        <tr>
+                            <th data-sort="title">Título <span class="sort-icon">↕</span></th>
+                            <th data-sort="authors">Autores <span class="sort-icon">↕</span></th>
+                            <th data-sort="year">Ano <span class="sort-icon">↕</span></th>
+                            <th data-sort="keywords">Palavras-chave <span class="sort-icon">↕</span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="table-info">
+                <span id="resultCount">0 artigos encontrados</span>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/common.js"></script>
+    <script src="js/articles.js"></script>
+</body>
+</html>

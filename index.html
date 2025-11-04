@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scientific Library - Upload CSV</title>
+    <meta name="description" content="Dashboard interativo para análise e visualização de bibliotecas de artigos científicos">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                </svg>
+                <h1>Scientific Library</h1>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="upload-section" id="uploadSection">
+                <div class="card">
+                    <h2>Carregar Biblioteca de Artigos Científicos</h2>
+                    <p class="subtitle">Faça upload de um arquivo CSV com seus artigos científicos</p>
+                    
+                    <div class="upload-area" id="uploadArea">
+                        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <p>Clique para selecionar ou arraste o arquivo CSV aqui</p>
+                        <input type="file" id="csvInput" accept=".csv" hidden>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mapping-section hidden" id="mappingSection">
+                <div class="card">
+                    <h2>Mapeamento de Campos</h2>
+                    <p class="subtitle">Selecione os campos do seu CSV que correspondem aos dados necessários</p>
+                    
+                    <div id="fieldsList"></div>
+                    
+                    <button class="btn btn-primary" id="confirmBtn">
+                        Confirmar e Processar
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/csvParser.js"></script>
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const csvInput = document.getElementById('csvInput');
+        const uploadSection = document.getElementById('uploadSection');
+        const mappingSection = document.getElementById('mappingSection');
+        const fieldsList = document.getElementById('fieldsList');
+        const confirmBtn = document.getElementById('confirmBtn');
+
+        let parsedData = null;
+        let availableFields = [];
+
+        uploadArea.addEventListener('click', () => csvInput.click());
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.name.endsWith('.csv')) {
+                handleFile(file);
+            }
+        });
+
+        csvInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        });
+
+        function handleFile(file) {
+            Papa.parse(file, {
+                header: true,
+                skipEmptyLines: true,
+                complete: (results) => {
+                    if (results.data.length === 0) {
+                        alert('O arquivo CSV está vazio');
+                        return;
+                    }
+                    
+                    parsedData = results.data;
+                    availableFields = Object.keys(results.data[0]);
+                    
+                    showMappingSection();
+                }
+            });
+        }
+
+        function showMappingSection() {
+            uploadSection.classList.add('hidden');
+            mappingSection.classList.remove('hidden');
+            
+            const requiredFields = [
+                { key: 'title', label: 'Título', required: true },
+                { key: 'authors', label: 'Autores', required: true },
+                { key: 'year', label: 'Ano', required: true },
+                { key: 'keywords', label: 'Palavras-chave', required: true },
+                { key: 'abstract', label: 'Resumo', required: false },
+                { key: 'doi', label: 'DOI', required: false }
+            ];
+
+            fieldsList.innerHTML = requiredFields.map(field => {
+                const suggested = suggestField(field.key, availableFields);
+                return `
+                    <div class="field-mapping">
+                        <label>
+                            ${field.label} ${field.required ? '<span class="required">*</span>' : ''}
+                        </label>
+                        <select id="field_${field.key}" ${field.required ? 'required' : ''}>
+                            <option value="">-- Selecione --</option>
+                            ${availableFields.map(f => 
+                                `<option value="${f}" ${f === suggested ? 'selected' : ''}>${f}</option>`
+                            ).join('')}
+                        </select>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function suggestField(fieldKey, availableFields) {
+            const patterns = {
+                title: ['title', 'titulo', 'título', 'article title', 'document title'],
+                authors: ['authors', 'autores', 'author', 'autor', 'creators'],
+                year: ['year', 'ano', 'publication year', 'date', 'data'],
+                keywords: ['keywords', 'palavras-chave', 'palavras chave', 'keyword', 'tags'],
+                abstract: ['abstract', 'resumo', 'summary'],
+                doi: ['doi', 'digital object identifier']
+            };
+
+            const fieldPatterns = patterns[fieldKey] || [];
+            
+            for (const field of availableFields) {
+                const fieldLower = field.toLowerCase();
+                for (const pattern of fieldPatterns) {
+                    if (fieldLower.includes(pattern)) {
+                        return field;
+                    }
+                }
+            }
+            
+            return '';
+        }
+
+        confirmBtn.addEventListener('click', () => {
+            const mapping = {
+                title: document.getElementById('field_title').value,
+                authors: document.getElementById('field_authors').value,
+                year: document.getElementById('field_year').value,
+                keywords: document.getElementById('field_keywords').value,
+                abstract: document.getElementById('field_abstract').value,
+                doi: document.getElementById('field_doi').value
+            };
+
+            if (!mapping.title || !mapping.authors || !mapping.year || !mapping.keywords) {
+                alert('Por favor, preencha todos os campos obrigatórios');
+                return;
+            }
+
+            const articles = parsedData.map((row, index) => ({
+                id: index + 1,
+                title: row[mapping.title] || '',
+                authors: row[mapping.authors] || '',
+                year: row[mapping.year] || '',
+                keywords: row[mapping.keywords] || '',
+                abstract: row[mapping.abstract] || '',
+                doi: row[mapping.doi] || ''
+            })).filter(article => article.title && article.authors);
+
+            saveArticles(articles);
+            saveFieldMapping(mapping);
+            
+            window.location.href = 'dashboard.html';
+        });
+    </script>
+</body>
+</html>
