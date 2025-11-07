@@ -366,3 +366,32 @@ tr:hover {
         height: 400px;
     }
 }
+
+.top-section {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.compact-card {
+  flex: 1;
+  padding: 0.5rem 1rem;
+}
+.stat-list.compact li {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.15rem 0;
+  font-size: 0.9rem;
+}
+#networkViz {
+  width: 100%;
+  height: 80vh;
+}
+.btn-more {
+  background: none;
+  border: none;
+  color: #1e40af;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0.25rem;
+}
