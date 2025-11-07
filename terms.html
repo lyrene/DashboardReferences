@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Termos (n tokens) — Scientific Library</title>
+  <link rel="stylesheet" href="css/style.css"/>
+
+  <style>
+    .upload-section {
+      text-align: center;
+      margin: 1rem 0 2rem;
+    }
+    .upload-area {
+      border: 2px dashed #94a3b8;
+      border-radius: 8px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    .upload-area:hover {
+      background: #f8fafc;
+    }
+    .upload-area.dragover {
+      background: #e0f2fe;
+    }
+    .upload-area p {
+      margin: 0.5rem 0 0;
+      color: #334155;
+    }
+
+    .terms-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1rem;
+      width: 100%;
+    }
+    .pane {
+      height: calc(100vh - 260px);
+      overflow-y: auto;
+    }
+    .pane .metrics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .75rem 1rem;
+      font-size: .95rem;
+      margin-bottom: .5rem;
+    }
+    .pane .metrics .badge {
+      background: #eef2ff;
+      color: #1e40af;
+      border-radius: 8px;
+      padding: .25rem .5rem;
+      font-weight: 600;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    thead th {
+      position: sticky;
+      top: 0;
+      background: #f8fafc;
+      cursor: pointer;
+      z-index: 1;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+      padding: .5rem .5rem;
+    }
+    tbody td {
+      border-bottom: 1px solid #f1f5f9;
+      padding: .5rem .5rem;
+      vertical-align: top;
+    }
+    .term-link { color: #1e40af; text-decoration: underline; cursor: pointer; }
+    mark.hl { background: #dbeafe; padding: 0 .1rem; }
+    .included-list { display: flex; flex-wrap: wrap; gap: .25rem .5rem; }
+    .included-list .pill {
+      background: #eff6ff; color: #1e3a8a; border-radius: 999px;
+      padding: .1rem .5rem; font-size: .85rem;
+    }
+    .muted { color: #64748b; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+        </svg>
+        <span>Scientific Library</span>
+      </div>
+      <div class="nav-links">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="articles.html">Artigos</a>
+        <a href="network.html">Rede</a>
+        <a href="timeline.html">Timeline</a>
+        <a href="terms.html" class="active">Termos</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <h1>Termos mais usados</h1>
+
+    <!-- Seção de upload -->
+    <div class="upload-section">
+      <div class="upload-area" id="uploadArea">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        <p>Clique ou arraste seu arquivo CSV aqui</p>
+        <input type="file" id="csvInput" accept=".csv" hidden>
+      </div>
+    </div>
+
+    <div id="mainView" style="display:none;">
+      <div class="terms-grid">
+        <div class="card pane" id="panelDict">
+          <h2>Dicionário de Termos</h2>
+          <div class="metrics" id="dictMetrics"></div>
+          <table id="dictTable">
+            <thead>
+              <tr>
+                <th data-key="term">Termo</th>
+                <th data-key="inTitle">Título</th>
+                <th data-key="inKeywords">Keywords</th>
+                <th data-key="inAbstract">Abstract</th>
+                <th data-key="includedCount">Incluído em</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="card pane" id="panelDocs">
+          <h2>Artigos para o termo selecionado</h2>
+          <div class="metrics" id="docsMetrics"></div>
+          <table id="docsTable">
+            <thead>
+              <tr>
+                <th>Ano</th>
+                <th>Título</th>
+                <th>Keywords</th>
+                <th>Abstract</th>
+                <th>Autores</th>
+              </tr>
+            </thead>
+            <tbody><tr><td colspan="5" class="muted">Selecione um termo.</td></tr></tbody>
+          </table>
+        </div>
+
+        <div class="card pane" id="panel3">
+          <h2>Quadro 3 (Reservado)</h2>
+          <p class="muted">Espaço reservado para futuras análises.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/terms.js"></script>
+
+  <script>
+    const uploadArea = document.getElementById('uploadArea');
+    const csvInput = document.getElementById('csvInput');
+
+    uploadArea.addEventListener('click', () => csvInput.click());
+    uploadArea.addEventListener('dragover', e => {
+      e.preventDefault(); uploadArea.classList.add('dragover');
+    });
+    uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+    uploadArea.addEventListener('drop', e => {
+      e.preventDefault(); uploadArea.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file && file.name.endsWith('.csv')) handleFile(file);
+    });
+    csvInput.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (file) handleFile(file);
+    });
+
+    function handleFile(file) {
+      Papa.parse(file, {
+        header: true,
+        skipEmptyLines: true,
+        encoding: "UTF-8",
+        transformHeader: h => (h || "").replace(/^\uFEFF/, "").trim(),
+        complete: results => {
+          if (!results.data || results.data.length === 0) {
+            alert("Arquivo vazio ou inválido."); return;
+          }
+          const data = results.data.map((row, i) => ({
+            id: i + 1,
+            title: row.title || row.Title || "",
+            authors: row.authors || row.author || "",
+            year: row.year || "",
+            keywords: row.keywords || row["keyword"] || "",
+            abstract: row.abstract || "",
+            doi: row.doi || ""
+          }));
+          saveArticles(data);
+          document.getElementById('mainView').style.display = 'block';
+          document.querySelector('.upload-section').style.display = 'none';
+          // recarrega lógica principal (já definida em terms.js)
+          location.reload();
+        }
+      });
+    }
+
+    // se já existir dados no localStorage, mostra direto
+    if (getArticles().length > 0) {
+      document.getElementById('mainView').style.display = 'block';
+      document.querySelector('.upload-section').style.display = 'none';
+    }
+  </script>
+</body>
+</html>

@@ -27,26 +27,26 @@
     </nav>
 
     <main class="container">
-        <h1>Rede de Cooperação entre Autores</h1>
-        
-        <div class="network-container">
-            <div class="card network-card">
-                <div id="networkViz"></div>
-            </div>
-            
-            <div class="network-sidebar">
-                <div class="card">
-                    <h3>Top 10 Autores Mais Produtivos</h3>
-                    <ul id="topAuthors" class="stat-list"></ul>
-                </div>
-                
-                <div class="card">
-                    <h3>Colaborações Mais Fortes</h3>
-                    <ul id="topCollabs" class="stat-list"></ul>
-                </div>
-            </div>
+      <h1>Rede de Cooperação entre Autores</h1>
+
+      <section id="topSection" class="top-section">
+        <div class="card compact-card">
+          <h3>Top Autores</h3>
+          <ul id="topAuthors" class="stat-list compact"></ul>
+          <button id="moreAuthors" class="btn-more">Ver mais</button>
         </div>
-    </main>
+
+        <div class="card compact-card">
+          <h3>Colaborações Mais Fortes</h3>
+          <ul id="topCollabs" class="stat-list compact"></ul>
+          <button id="moreCollabs" class="btn-more">Ver mais</button>
+        </div>
+      </section>
+
+      <div class="card network-card-full">
+        <div id="networkViz"></div>
+      </div>
+  </main>
 
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="js/common.js"></script>
